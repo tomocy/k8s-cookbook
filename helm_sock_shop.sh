@@ -30,4 +30,5 @@ echo "  http://${IP}:${PORT}"
 echo ''
 echo 'delete sock shop deployment if you do not want to be charged by the following command'
 echo '  helm delete --purge sockshop'
+echo '  helm reset --force'
 echo '  kubectl delete namespace sock-shop'
