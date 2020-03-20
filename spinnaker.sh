@@ -3,6 +3,13 @@
 echo 'create namespace'
 kubectl create namespace spinnaker
 
+echo 'install MinIO'
+helm install \
+--namespace spinnaker \
+--name minio \
+--set accessKey=accesskey,secretKey=secretKey \
+stable/minio
+
 echo 'create service account'
 kubectl create serviceaccount spinnaker-sa \
 -n spinnaker
