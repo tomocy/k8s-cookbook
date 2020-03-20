@@ -19,10 +19,10 @@ SECRET=$(kubectl get sa spinnaker-sa \
 -o jsonpath='{.secrets[0].name}')
 TOKEN=$(kubectl get secret ${SECRET} \
 -n spinnaker \
--o jsonpath='{.data.token}')
+-o jsonpath='{.data.token}' | base64 --decode)
 kubectl config set-credentials spinnaker \
 --token ${TOKEN}
 kubectl config set-context spinnaker-admin \
---namespace spinnaker
---user spinnaker
+--namespace spinnaker \
+--user spinnaker \
 --cluster aks01
