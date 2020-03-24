@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: redis-master
+    labels:
+        app: redis
+        role: master
+        tier: backend
+spec:
+    selector:
+        app: redis
+        role: master
+        tiler: backend
+    ports:
+    - port: 6379
