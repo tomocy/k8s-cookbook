@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    name: casandora
+spec:
+    serviceName: casandora
+    selector:
+        matchLabels:
+            app: casandora
+    replicas: 3
+    template:
+        metadata:
+            labels:
+                app: casandora
+        spec:
+            containers:
+            - name: casandora
+              image: gcr.io/google-samples/cassandra:v13
+              imagePullPolicy: Always
+              ports:
+              - name: intra-node
+                containerPort: 7000
+              - name: tls-intra-node
+                containerPort: 7001
+              - name: jmx
+                containerPort: 7199
+              - name: cql
+                containerPort: 9042
+              securityContext:
+                capabilities:
+                    add:
+                    - IPC_LOCK
+              lifecycle:
+                preStop:
+                    exec:
+                        command:
+                            - /bin/sh
+                            - -c
+                            - nodetool drain
+              env:
+              - name: MAX_HEAP_SIZE
+                value: 512M
+              - name: HEAP_NEW_SIZE
+                value: 100M
+              - name: casandora_SEEDS
+                value: 'cassandra-0.cassandra.default.svc.cluster.local'
+              - name: casandora_CLUSTER_NAME
+                value: minikube
+              - name: CASSANDRA_DC
+                value: dc1
+              - name: CASSANDRA_RACK
+                value: rack1
+              - name: POD_IP
+                valueFrom:
+                    fieldRef:
+                        fieldPath: status.podIP
+              readinessProbe:
+                exec:
+                    command:
+                        - /bin/sh
+                        - -c
+                        - /ready-probe.sh
+                initialDelaySeconds: 15
+                timeoutSeconds: 5
+              volumeMounts:
+              - name: casandora
+                mountPath: /casandora_data
+    volumeClaimTemplates:
+    - metadata:
+        name: casandora
+      spec:
+        storageClassName: fast
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+              storage: 1Gi
+
+

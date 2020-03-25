@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: casandora
+    labels:
+        app: casandora
+spec:
+    clusterIP: None
+    selector:
+        app: casandora
+    ports:
+    - port: 9042
